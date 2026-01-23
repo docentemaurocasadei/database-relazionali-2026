@@ -57,14 +57,15 @@ orders (Testata Ordini)
 id: INT (PK)
 workshop_id: INT (FK su workshops.id)
 order_date: DATETIME
-status: VARCHAR
+status: TINYINT
 total_amount: DECIMAL 
+//shipping_cost, payment_method, taxes
 
 order_items (Dettaglio righe ordine)
-id: INT (PK)
+--id: INT (PK)
 order_id: INT (FK su orders.id)
 product_id: INT (FK su products.id, NULLABLE)
-kit_id: INT (FK su kit.id, NULLABLE)
+--kit_id: INT (FK su kit.id, NULLABLE)
 quantity: INT
 unit_price: DECIMAL
 
