@@ -30,3 +30,16 @@ JOIN workshops ON orders.workshops_id = workshops.id
 JOIN order_item ON orders.id = order_item.orders_id;
 
 # ============================================
+estrarre tutti i prodotti
+mostrando il nome del prodotto, sku
+e il company_name del fornitore che lo fornisce
+
+SELECT 
+`products`.`name` as product_name, 
+products.sku, 
+suppliers.company_name, 
+categories.name as category_name
+FROM products
+JOIN product_supplier ON products.id = product_supplier.product_id
+JOIN suppliers ON product_supplier.supplier_id = suppliers.id
+JOIN categories ON products.category_id = categories.id;
