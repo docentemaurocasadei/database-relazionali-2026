@@ -1,7 +1,7 @@
 #inserire dati in una tabella SQL
 #per inserire i dati in una tabella si usa il comando INSERT INTO
 #3 officine
-INSERT INTO ricambi.workshops (
+INSERT INTO `ricambi`.`workshops` (
     business_name, 
     vat_number,
     street_address,
