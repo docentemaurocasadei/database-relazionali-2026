@@ -51,3 +51,20 @@ FROM orders;
 SELECT id, order_date, status, ADDDATE(order_date, INTERVAL 30 DAY) as data_previsto_pagamento
 FROM orders
 WHERE ADDDATE(order_date, INTERVAL 30 DAY) > CURDATE();   
+
+#mysql functions (numberiche)
+SELECT ABS(-50) AS valore_assoluto;
+
+#CEIL è L'ARROTONDAMENTO PER ECCESSO
+#IPOTIZZIAMO DI VOLERE CREARE UN NUOVO "LISTINO" prodotti
+# DOVE IL PREZZO DI PRODOTTO è AUMENTATO DEL 15% 
+#E ARROTONDATO ALL'EURO SUPERIORE
+
+SELECT name, sell_price, 
+CEIL(sell_price * 1.15) AS prezzo_aumentato
+FROM products;
+
+#richiedere un numero randomico tra 1 e 50
+SELECT CEIL(RAND() * 50) AS numero_randomico;
+
+
