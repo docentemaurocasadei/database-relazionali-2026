@@ -1,3 +1,4 @@
+
 -- MySQL dump 10.13  Distrib 8.0.42, for Win64 (x86_64)
 --
 -- Host: localhost    Database: gestione_corsi
@@ -18,7 +19,8 @@
 --
 -- Table structure for table `aule`
 --
-
+CREATE DATABASE gestione_corsi;
+USE gestione_corsi;
 DROP TABLE IF EXISTS `aule`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
