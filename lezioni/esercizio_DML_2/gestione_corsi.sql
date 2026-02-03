@@ -21,6 +21,7 @@
 --
 CREATE DATABASE gestione_corsi;
 USE gestione_corsi;
+
 DROP TABLE IF EXISTS `aule`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
