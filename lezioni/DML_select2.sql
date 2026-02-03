@@ -67,4 +67,56 @@ FROM products;
 #richiedere un numero randomico tra 1 e 50
 SELECT CEIL(RAND() * 50) AS numero_randomico;
 
+#contare il numero totale di prodotti nel magazzino
+SELECT count(*) AS totale_prodotti FROM products;
 
+# ============================================
+SELECT COUNT(*) AS prodotti_maggiori_20 FROM products
+WHERE sell_price > 20.00;
+
+#NUMERO TOTALE DI PRODOTTI IN MAGAZZINO (GIACENZA TOTALE)
+SELECT SUM(stock_quantity) AS totale_giacenza FROM products;
+
+#VALORE MEDIO DI GIACENZA PER PRODOTTO
+SELECT AVG(stock_quantity) AS giacenza_media FROM products;
+
+#PREZZO MEDIO DEI PRODOTTI
+SELECT AVG(sell_price) AS prezzo_medio FROM products;
+
+#QUANTI PRODOTTI IN UN ORDINE
+SELECT order_id, COUNT(*) AS numero_prodotti, 
+SUM(unit_price * quantity) AS totale_ordine
+FROM order_item
+GROUP BY order_id; 
+
+#mostrare la categoria e quanti prodotti appartengono a ciascuna categoria
+SELECT categories.name,category_id, COUNT(*) AS numero_prodotti
+FROM products JOIN categories
+ON products.category_id = categories.id
+GROUP BY category_id;
+
+#1mostrare il numero di ordini effettuati da ciascun cliente mostrando solo
+il workshop_id e il numero di ordini
+SELECT workshop_id, COUNT(*) AS numero_ordini
+FROM orders
+GROUP BY workshop_id;
+
+
+#2 aggiungere il business_name del workshop
+SELECT workshops.business_name, orders.workshop_id, COUNT(*) AS numero_ordini
+FROM orders JOIN workshops  
+ON orders.workshop_id = workshops.id
+GROUP BY orders.workshop_id;
+
+SELECT ROW_NUMBER() OVER (PARTITION BY workshop_id ORDER BY workshop_id),workshop_id, id  FROM orders;
+
+SELECT id, 
+IF(updated_at IS NULL, 'MAI AGGIORNATO', 'AGGIORNATO') AS aggiornamento_ordine
+FROM orders;
+SELECT JSON_OBJECT('id', id, 'company_name', company_name, 
+'email', email) AS info_fornitore
+FROM suppliers
+
+#{"id": 1, "business_name": "Forniture Inc.", "email": "info@fornitureinc.com"}
+
+13 (ma non considerate having), 18,19,22,23,24,25
