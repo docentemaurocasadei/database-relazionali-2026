@@ -53,24 +53,43 @@ INSERT INTO order_item (order_id, product_id, quantity, unit_price) VALUES (1, 2
 ROLLBACK TO after_update_product;
 
 #variabili locali
+#inserisco un ordine
 INSERT INTO orders (order_date, status, workshop_id) 
 VALUES ('2026-02-10', 'In Bozza', 2);
 SET @last_order_id = LAST_INSERT_ID();
 
+#inserisco 2 prodotti per quell'ordine
 insert into order_item (order_id, product_id, quantity, unit_price)
 VALUES (@last_order_id, 1, 2, 50.00), 
 (@last_order_id, 2, 5, 22.50);
 
-insert into products (name, description, stock_quantity, sell_price)
-VALUES ('Kit frizione', 'Kit frizione completo per auto', 20, 150.00);
+#inserisco un nuovo prodotto 
+insert into products (name, description, stock_quantity, sell_price, category_id, sku)
+VALUES ('Kit frizione', 'Kit frizione completo per auto', 20, 150.00, 2, 'KF123');
 
 SET @last_product_id = LAST_INSERT_ID();
 
 insert into order_item (order_id, product_id, quantity, unit_price)
 VALUES (@last_order_id, 3, 1, 98.90);
 
-
+#aggiungo all\'ordine appena creato il nuovo prodotto
+insert into order_item (order_id, product_id, quantity, unit_price)
+VALUES (@last_order_id, @last_product_id, 11, 145.90);
 
 select @last_order_id;
 select @last_product_id;
+
+#esercizio:
+#inserire un nuovo workshop con i seguenti dati:
+#business_name: Officina Milano & Co
+#fiscal_code: 00123123145
+#street_number: 10
+#street_address: Via Roma
+#city: Verona
+
+#salvare l'id del workshop appena inserito in una variabile 
+#inserire un nuovo ordine per quel workshop 
+#nell'ordine inseire 2 prodotti 
+- 5 con quantità 3 e unit_price 50.00
+- 6 con quantità 2 e unit_price 22.50
 
