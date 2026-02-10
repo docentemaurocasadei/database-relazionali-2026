@@ -93,7 +93,7 @@ select @last_product_id;
 - 5 con quantità 3 e unit_price 50.00
 - 6 con quantità 2 e unit_price 22.50
 
-#START TRANSACTION;
+START TRANSACTION;
 INSERT INTO workshops 
 (business_name, fiscal_code, street_number, street_address, city, vat_number) 
 VALUES 
@@ -112,4 +112,122 @@ VALUES (@last_order_id, 5, 3, 50.00),
 
 select @last_workshop_id;
 select @last_order_id;
-#ROLLBACK;
+COMMIT;
+
+
+#ESTRAE GLI ORDINI CHE SONO STATI EFFETTUATI
+DAL 01/02/2026 AL 10/02/2026 
+- TOTALE ORDINE
+
+CREATE OR REPLACE VIEW vw_order_totals AS
+SELECT orders.id, orders.order_date,  
+SUM(order_item.quantity * order_item.unit_price) AS total_order
+FROM orders
+JOIN order_item ON orders.id = order_item.order_id
+WHERE orders.order_date BETWEEN '2026-02-01' AND '2026-02-10'
+GROUP BY orders.id, orders.order_date;
+
+#STORED PROCEDURE
+DELIMITER $$
+DROP PROCEDURE IF EXISTS pc_get_order_total $$
+CREATE PROCEDURE pc_get_order_total(IN p_order_id INT, OUT p_total DECIMAL(10,2)) 
+BEGIN
+    SELECT SUM(quantity * unit_price) INTO p_total
+    FROM order_item
+    WHERE order_id = p_order_id;
+
+END $$
+
+DELIMITER ;
+CALL pc_get_order_total(1, @total);
+SELECT @total;
+
+#Esercizio STORED PROCEDURE:
+1. creare una stored procedure che prenda in input un id 
+di workshop e restituisca il numero totale di ordini effettuati da quel workshop
+
+1a: chiamare con CALL() la stored procedure per un workshop a scelta
+
+2. aggiungere alla stored procedure altri 2 parametri di input: 
+data_inizio e data_fine, in modo da restituire il numero totale di ordini effettuati 
+da quel workshop in un intervallo di date specifico
+
+2a: chiamare con CALL() la stored procedure per un workshop a scelta e 
+un intervallo di date a scelta
+
+#SOLUZIONE 1a
+DELIMITER $$
+DROP PROCEDURE IF EXISTS pc_get_workshop_order_count $$
+CREATE PROCEDURE pc_get_workshop_order_count(IN p_workshop_id INT, OUT p_order_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_order_count FROM orders 
+    WHERE workshop_id = p_workshop_id;
+END $$
+
+DELIMITER ;
+
+CALL pc_get_workshop_order_count(4, @order_count);
+SELECT @order_count;
+
+#SOLUZIONE 2a
+DELIMITER $$
+DROP PROCEDURE IF EXISTS pc_get_workshop_order_count_by_date $$
+CREATE PROCEDURE pc_get_workshop_order_count_by_date(
+    IN p_workshop_id INT, 
+    IN p_start_date DATE, 
+    IN p_end_date DATE, 
+    OUT p_order_count INT)
+BEGIN
+    SELECT COUNT(*) INTO p_order_count FROM orders 
+    WHERE workshop_id = p_workshop_id
+    AND order_date BETWEEN p_start_date AND p_end_date;
+END $$
+
+DELIMITER ;
+
+CALL pc_get_workshop_order_count_by_date(4, '2026-02-01', '2026-02-10', @order_count);
+SELECT @order_count;
+
+#STORED FUNCTION
+#creare una funzione che prenda in input un id di supplier e restituisca il numero di prodotti forniti da quel supplier
+
+
+DELIMITER $$
+DROP FUNCTION IF EXISTS fn_supplier_product_count $$
+CREATE FUNCTION fn_supplier_product_count(p_supplier_id int)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    DECLARE product_count INT;
+    SELECT COUNT(*) INTO product_count FROM product_supplier WHERE supplier_id = p_supplier_id;
+    RETURN product_count;
+END $$
+
+DELIMITER ;
+SELECT fn_supplier_product_count(1);
+SELECT fn_supplier_product_count(2);
+SELECT fn_supplier_product_count(3);
+SELECT fn_supplier_product_count(4);
+
+#TRIGGER
+
+CREATE TABLE `ricambi_mc`.`order_logs` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `order_id` INT NULL,
+  `action` VARCHAR(45) NULL,
+  `message` TEXT NULL,
+  PRIMARY KEY (`id`),
+  INDEX `order_id` (`order_id` ASC) VISIBLE);
+
+DELIMITER $$
+
+#creare un trigger che dopo l'inserimento di un nuovo ordine nella tabella orders, inserisca una nuova riga nella tabella order_logs con i seguenti dati:
+- order_id: id dell'ordine appena inserito
+CREATE TRIGGER tr_order_status_create
+AFTER INSERT ON orders
+FOR EACH ROW
+BEGIN
+    INSERT INTO order_logs (order_id, action, message) 
+    VALUES (NEW.id, 'CREATED',CONCAT('Ordine creato da: ', USER()));
+END $$
+DELIMITER ;
