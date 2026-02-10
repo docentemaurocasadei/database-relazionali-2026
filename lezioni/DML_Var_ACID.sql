@@ -93,3 +93,23 @@ select @last_product_id;
 - 5 con quantità 3 e unit_price 50.00
 - 6 con quantità 2 e unit_price 22.50
 
+#START TRANSACTION;
+INSERT INTO workshops 
+(business_name, fiscal_code, street_number, street_address, city, vat_number) 
+VALUES 
+('Officina Ancona & Co', '00123123145', '10', 'Via Roma', 'Ancona', '00023322558');
+
+set @last_workshop_id = LAST_INSERT_ID();
+
+INSERT INTO orders (order_date, status, workshop_id) 
+VALUES ('2026-02-10', 'In Bozza', @last_workshop_id);
+
+set @last_order_id = LAST_INSERT_ID();
+
+insert into order_item (order_id, product_id, quantity, unit_price)
+VALUES (@last_order_id, 5, 3, 50.00),
+(@last_order_id, 6, 2, 22.50);  
+
+select @last_workshop_id;
+select @last_order_id;
+#ROLLBACK;
