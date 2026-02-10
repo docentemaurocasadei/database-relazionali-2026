@@ -52,4 +52,25 @@ SAVEPOINT after_update_product;
 INSERT INTO order_item (order_id, product_id, quantity, unit_price) VALUES (1, 2, 4, 50.00);
 ROLLBACK TO after_update_product;
 
+#variabili locali
+INSERT INTO orders (order_date, status, workshop_id) 
+VALUES ('2026-02-10', 'In Bozza', 2);
+SET @last_order_id = LAST_INSERT_ID();
+
+insert into order_item (order_id, product_id, quantity, unit_price)
+VALUES (@last_order_id, 1, 2, 50.00), 
+(@last_order_id, 2, 5, 22.50);
+
+insert into products (name, description, stock_quantity, sell_price)
+VALUES ('Kit frizione', 'Kit frizione completo per auto', 20, 150.00);
+
+SET @last_product_id = LAST_INSERT_ID();
+
+insert into order_item (order_id, product_id, quantity, unit_price)
+VALUES (@last_order_id, 3, 1, 98.90);
+
+
+
+select @last_order_id;
+select @last_product_id;
 
